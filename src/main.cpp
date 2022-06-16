@@ -1,6 +1,7 @@
 #define TERRAIN_AMPLITUDE 30.0f
 #define TERRAIN_SIZE_X 64
 #define TERRAIN_SIZE_Z 64
+#define TERRAIN_SEED 120
 #define WIN_WIDTH 1280
 #define WIN_HEIGHT 800
 
@@ -67,8 +68,7 @@ int main(int argc, char* argv[])
 
     std::vector<std::vector<int>> heightMap(TERRAIN_SIZE_X, std::vector<int>(TERRAIN_SIZE_Z, -1));
 
-    const int noiseSeed = 120;
-    PerlinNoise perlinNoise(noiseSeed);
+    PerlinNoise perlinNoise(TERRAIN_SEED);
 
     for (int x = 0; x < TERRAIN_SIZE_X; ++x)
     {
