@@ -81,8 +81,8 @@ int main(int argc, char* argv[])
         }
     }
 
-    ShaderProgram shaderProgram("../Glitter/Shaders/Phong.vert",
-        "../Glitter/Shaders/Phong.frag");
+    ShaderProgram shaderProgram("./Assets/Shaders/Phong.vert",
+        "./Assets/Shaders/Phong.frag");
     shaderProgram.activate();
 
     std::map<TextureAtlas::SubTexture, glm::vec4> subTextureCoords;
@@ -93,7 +93,7 @@ int main(int argc, char* argv[])
     subTextureCoords[TextureAtlas::SubTexture::snowSideTop] = glm::vec4(0.25f, 0.25f, 0.5f, 0.5f);
     subTextureCoords[TextureAtlas::SubTexture::sand] = glm::vec4(0.25f, 0.0f, 0.5f, 0.25f);
     subTextureCoords[TextureAtlas::SubTexture::water] = glm::vec4(0.5f, 0.0f, 0.75f, 0.25f);
-    TextureAtlas textureAtlas("../Glitter/Assets/Textures/texture_atlas.png", GL_RGBA, subTextureCoords);
+    TextureAtlas textureAtlas("./Assets/Textures/texture_atlas.png", GL_RGBA, subTextureCoords);
     textureAtlas.activate(0);
     shaderProgram.setUniform("DiffuseTexture", 0);
 
