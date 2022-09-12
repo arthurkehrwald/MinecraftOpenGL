@@ -4,7 +4,8 @@
 #define TERRAIN_SEED 120
 #define WIN_WIDTH 1280
 #define WIN_HEIGHT 800
-
+#define TIME_SCALE .1f
+#define PI 3.1415
 
 #pragma once
 // Local Headers
@@ -32,8 +33,21 @@ const glm::vec3 cameraPos(0.0f, TERRAIN_AMPLITUDE, 0.0f);
 Camera camera(cameraPos, 45.0f, -25.0f);
 glm::vec2 prevCursorPos(400.0, 300.0);
 bool hasCursorMoved = false;
+bool useManualCameraControls = false;
+bool wasUseManualCameraControlsToggleKeyPressedLastFrame = false; // name :>
+const glm::vec3 terrainMiddlePos = glm::vec3(TERRAIN_SIZE_X / 2.0, 10.0, TERRAIN_SIZE_Z / 2);
 
 void mouseCallback(GLFWwindow* window, double xPos, double yPos);
+
+glm::mat4 calc_animation_view()
+{
+    float rot = PI * TIME_SCALE;
+    glm::vec3 camPos = terrainMiddlePos + glm::vec3(cos(glfwGetTime() * rot) * 90.0, 50.0, sin(glfwGetTime() * rot) * 90.0);
+    glm::vec3 fwd = glm::normalize(terrainMiddlePos - camPos);
+    glm::vec3 r = glm::normalize(glm::cross(fwd, glm::vec3(0.0, 1.0, 0.0)));
+    glm::vec3 up = glm::normalize(glm::cross(r, fwd));
+    return glm::lookAt(camPos, camPos + fwd, up);
+}
 
 int main(int argc, char* argv[])
 {
@@ -118,7 +132,7 @@ int main(int argc, char* argv[])
         glm::vec3(0.0f, 1.0f, 0.0f));
     shaderProgram.setUniform("View", view);
 
-    glm::mat4 projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
+    glm::mat4 projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 300.0f);
     shaderProgram.setUniform("Projection", projection);
 
     float timeAtPrevFrame = glfwGetTime();
@@ -132,14 +146,36 @@ int main(int argc, char* argv[])
         // Process input
         if (glfwGetKey(mWindow, GLFW_KEY_ESCAPE) == GLFW_PRESS)
             glfwSetWindowShouldClose(mWindow, true);
-        camera.processMoveInput(mWindow, deltaTime);
 
-        // Set shader uniforms        
-        view = camera.getView();
+        if (glfwGetKey(mWindow, GLFW_KEY_TAB) == GLFW_PRESS)
+        {
+            if (!wasUseManualCameraControlsToggleKeyPressedLastFrame)
+            {
+                useManualCameraControls = !useManualCameraControls;
+            }
+            wasUseManualCameraControlsToggleKeyPressedLastFrame = true;
+        }
+        else
+        {
+            wasUseManualCameraControlsToggleKeyPressedLastFrame = false;
+        }
+
+        // Move camera
+        if (useManualCameraControls)
+        {
+            camera.processMoveInput(mWindow, deltaTime);
+            view = camera.getView();
+        }
+        else
+        {
+            view = calc_animation_view();
+        }
+
+        // Set shader uniforms      
         shaderProgram.setUniform("View", view);
         shaderProgram.setUniform("Model", model);
         shaderProgram.setUniform("WorldCameraPos", camera.getPos());
-        float t = sin(glfwGetTime() * 0.2f);
+        float t = sin(glfwGetTime() * PI * TIME_SCALE);
         glm::vec3 lightDirection(t, t * -2.0f, 1.0f);
         shaderProgram.setUniform("LightDir", lightDirection);
         const glm::vec3 dayLightColor(0.95f, 0.95f, 0.8f);

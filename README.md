@@ -5,10 +5,11 @@ https://user-images.githubusercontent.com/50906979/174195916-043198a7-aa10-4cdf-
 This is a C++ Windows app that generates and renders a minecraft style voxel terrain using OpenGL.
 I followed the OpenGL guide at [https://learnopengl.com](url) for the basics and added procedural mesh generation.
 
-## How to open
+## How to use
 
 Use Visual Studio 2019. Switch configuration to x86. Run. Hope it works.
 The first couple lines of main.cpp contain some terrain generation settings you can change if you're bored.
+Press TAB to switch between manual and automatic camera controls.
 
 ## Documentation
 
